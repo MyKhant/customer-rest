@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,37 @@ public class CustomerService {
                 customer.getEmail()
         );
     }
+
+    public void deleteCustomer(int id){
+        if (customerDao.existsById(id)){
+            customerDao.deleteById(id);
+        }
+        else {
+            throw new EntityNotFoundException(id + " Not Found!");
+        }
+    }
+
+    @Transactional
+    public CustomerDto updateCustomer(CustomerDto customerDto){
+        Customer exitingCustomer = customerDao.findById(customerDto.id())
+                .orElseThrow(EntityNotFoundException::new);
+
+        exitingCustomer.setCode(customerDto.code());
+        exitingCustomer.setId(customerDto.id());
+        exitingCustomer.setFirstName(customerDto.firstName());
+        exitingCustomer.setLastName(customerDto.lastName());
+        exitingCustomer.setEmail(customerDto.email());
+
+        return customerDto;
+    }
+
+    public CustomerDto changeCode(int id, String code){
+        Customer customer = customerDao.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        customer.setCode(code);
+        return toDto(customer);
+    }
+
     public CustomerDto findCustomerById(int id){
         Customer customer = customerDao.findById(id)
                 .orElseThrow(EntityNotFoundException::new);

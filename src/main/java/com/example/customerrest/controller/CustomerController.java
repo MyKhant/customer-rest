@@ -32,6 +32,8 @@ public class CustomerController {
                 .forEach(customerService::saveCustomer);
         return "success";
     }
+
+
 //    CustomerDto(Integer id, String code, @JsonProperty(value = "first_name") String firstName, @JsonProperty(value = "last_name") String lastName, String email){}
 
     // curl -X POST -H "Content-Type: application/json" -d '{"id":null,"code":"AB","first_name":"Ashly","last_name":"Burn","email":"ashly@gmail.com"}' localhost:8080/customers
@@ -41,6 +43,27 @@ public class CustomerController {
         return ResponseEntity
                 .created(URI.create("http://localhost:8080/customers"))
                 .body(saveCustomer);
+    }
+    // curl -X DELETE "http://localhost:8080/customers/customer?id=4"
+    @DeleteMapping("/customers/customer")
+    public ResponseEntity deleteCustomer(@RequestParam("id") int id){
+        customerService.deleteCustomer(id);
+        return ResponseEntity
+                .notFound().build();
+    }
+
+    @PatchMapping(value = "/customers/customer", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<CustomerDto> changeCode(@RequestBody String code, @RequestParam("id") int id){
+        CustomerDto customerDto = customerService.changeCode(id,code);
+        return ResponseEntity
+                .ok()
+                .body(customerDto);
+    }
+
+    @PostMapping(value = "/customers/customer", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CustomerDto> updateCustomer(@RequestBody CustomerDto customerDto){
+       CustomerDto customer = customerService.updateCustomer(customerDto);
+       return ResponseEntity.ok().body(customer);
     }
 
     @GetMapping(value = "/customers/all", produces = MediaType.APPLICATION_JSON_VALUE)
