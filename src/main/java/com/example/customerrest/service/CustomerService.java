@@ -18,11 +18,9 @@ public class CustomerService {
     @Autowired
     private CustomerDao customerDao;
 
-
-
-    public void saveCustomer(CustomerDto customerDto){
-
-        customerDao.save(toEntity(customerDto));
+    public CustomerDto saveCustomer(CustomerDto customerDto){
+        Customer customer = customerDao.save(toEntity(customerDto));
+        return toDto(customer);
     }
 
     public Customer toEntity(CustomerDto customerDto){
